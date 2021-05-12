@@ -238,97 +238,26 @@ function mkBlog(editor) {
                         attributes: {
                            class: 'head-box text-center mb-5',
                         },
-                        components: [
-                           {
-                              tagName: 'h2',
-                              content: 'Our Blog Post',
-                           },
-                           {
-                              tagName: 'h6',
-                              attributes: {
-                                 class: 'text-underline-primary',
-                              },
-                              content: 'This is blog panel',
-                           },
-                           {
-                              attributes: {
-                                 class: 'text-underline',
-                              },
-                           },
-                        ],
+                        components: `
+                           <h2>Our Blog Post</h2>
+                           <h6 className="text-underline-primary">This is blog panel</h6>
+                           <div className="text-underline"></div>
+                        `,
                      },
                      {
-                        attributes: {
-                           class: 'row',
-                        },
+                        attributes: { class: 'row' },
                         components: {
-                           attributes: {
-                              class: 'col col-xs-12',
-                           },
+                           attributes: { class: 'col col-xs-12' },
                            components: {
                               attributes: {
                                  class: 'blog-grids',
+                                 style:
+                                    'display: flex; justify-content: space-between',
                               },
                               components: [
-                                 {
-                                    attributes: {
-                                       class: 'grid',
-                                    },
-                                    components: [
-                                       {
-                                          attributes: {
-                                             class: 'entry-media',
-                                          },
-                                          components: {
-                                             tagName: 'img',
-                                             type: 'image',
-                                             attributes: {
-                                                src: 'images/mimi-thian.jpg',
-                                             },
-                                          },
-                                       },
-                                       {
-                                          attributes: {
-                                             class: 'entry-body',
-                                          },
-                                          components: [
-                                             {
-                                                tagName: 'span',
-                                                attributes: {
-                                                   class: 'cat',
-                                                },
-                                                content: 'inspiration',
-                                             },
-                                             {
-                                                tagName: 'h3',
-                                                components: {
-                                                   tagName: 'a',
-                                                   content:
-                                                      'Beautiful css3 buttons with hover effects',
-                                                },
-                                             },
-                                             {
-                                                attributes: {
-                                                   class: 'read-more-date',
-                                                },
-                                                components: [
-                                                   {
-                                                      tagName: 'a',
-                                                      content: 'Read More...',
-                                                   },
-                                                   {
-                                                      tagName: 'span',
-                                                      attributes: {
-                                                         class: 'date',
-                                                      },
-                                                      content: '3 Hours Ago',
-                                                   },
-                                                ],
-                                             },
-                                          ],
-                                       },
-                                    ],
-                                 },
+                                 getMkBlogs(text),
+                                 getMkBlogs(text),
+                                 getMkBlogs(text),
                               ],
                            },
                         },
@@ -336,9 +265,7 @@ function mkBlog(editor) {
                   ],
                },
             },
-            style: {
-               padding: '40px',
-            },
+            style: { padding: '40px' },
          },
       },
    })
@@ -350,4 +277,106 @@ function mkBlog(editor) {
       attributes: { class: 'fa fa-text' },
       content: { type: 'mk-blog' },
    })
+}
+
+function getMkBlogs(text) {
+   return {
+      attributes: { class: 'grid' },
+      components: [
+         {
+            attributes: { class: 'entry-media' },
+            components: {
+               tagName: 'img',
+               type: 'image',
+            },
+         },
+         {
+            attributes: { class: 'entry-body' },
+            components: [
+               {
+                  tagName: 'span',
+                  attributes: { class: 'cat' },
+                  content: 'inspiration',
+               },
+               {
+                  tagName: 'h3',
+                  components: {
+                     tagName: 'a',
+                     content: text,
+                     traits: [
+                        {
+                           type: 'checkbox',
+                           name: 'show__title',
+                           label: 'Show Title',
+                           changeProp: 1,
+                        },
+                        {
+                           type: 'text',
+                           name: 'value',
+                           label: 'Value',
+                           changeProp: 1,
+                        },
+                        {
+                           type: 'button',
+                           text: 'Submit',
+                           full: true, // Full width button
+                           command: editor => {
+                              const component = editor.getSelected()
+                              const parentNode = component
+                                 .parent()
+                                 .parent()
+                                 .parent()
+                                 .parent()
+                                 .find('h3 a')
+                              const trait = component.getTrait('show__title')
+                              const textContentTrait = component.getTrait(
+                                 'value'
+                              )
+                              const { value: showTitle } = trait.props()
+                              if (textContentTrait.props().value) {
+                                 component.empty()
+                                 component.append(
+                                    textContentTrait.props().value
+                                 )
+                              }
+                              if (!showTitle) {
+                                 parentNode.forEach(node =>
+                                    node.setAttributes({
+                                       style: 'display:none',
+                                    })
+                                 )
+                              }
+                              if (showTitle) {
+                                 parentNode.forEach(node =>
+                                    node.setAttributes({
+                                       style: 'display:block',
+                                    })
+                                 )
+                              }
+                           },
+                        },
+                     ],
+                     show__title: 'checked',
+                     value: text,
+                  },
+               },
+               {
+                  attributes: {
+                     class: 'read-more-date',
+                  },
+                  components: [
+                     `<a href="#">Read More...</a>`,
+                     {
+                        tagName: 'span',
+                        attributes: {
+                           class: 'date',
+                        },
+                        content: '3 Hours Ago',
+                     },
+                  ],
+               },
+            ],
+         },
+      ],
+   }
 }
