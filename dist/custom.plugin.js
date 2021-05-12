@@ -128,6 +128,8 @@ function dynamicInput(editor) {
 // rendering using component
 function dynamicBlog(editor) {
    // Define a new custom component
+   const text = 'Headers test'
+
    editor.Components.addType('custom-blog', {
       model: {
          defaults: {
@@ -139,10 +141,10 @@ function dynamicBlog(editor) {
                {
                   tagName: 'h1',
                   type: 'text',
-                  content: 'Headers test',
-                  removable: false, // Can't remove it
-                  draggable: false, // Can't move it
-                  copyable: false,
+                  content: text,
+                  attributes: {
+                     class: 'heading',
+                  },
                   traits: [
                      {
                         type: 'checkbox',
@@ -151,23 +153,49 @@ function dynamicBlog(editor) {
                         changeProp: 1,
                      },
                      {
+                        type: 'text',
+                        name: 'value',
+                        label: 'Value',
+                        changeProp: 1,
+                     },
+                     {
                         type: 'button',
                         text: 'Submit',
                         full: true, // Full width button
                         command: editor => {
                            const component = editor.getSelected()
+
                            const trait = component.getTrait('show__title')
+                           const textContentTrait = component.getTrait('value')
                            const { value } = trait.props()
+                           if (
+                              textContentTrait.props().value ||
+                              textContentTrait.props().value == ''
+                           ) {
+                              component.empty()
+                              component.append(textContentTrait.props().value)
+                           }
                            if (!value) {
                               const components = editor.getComponents()
                               components.forEach(component => {
-                                 component.find('h1')[0].remove()
+                                 component
+                                    .find('h1')[0]
+                                    .setAttributes({ style: 'display:none' })
+                              })
+                           }
+                           if (value) {
+                              const components = editor.getComponents()
+                              components.forEach(component => {
+                                 component
+                                    .find('h1')[0]
+                                    .setAttributes({ style: 'display:block' })
                               })
                            }
                         },
                      },
                   ],
                   show__title: 'checked',
+                  value: text,
                },
                '<p>Paragraph test</p>',
             ],
@@ -184,5 +212,142 @@ function dynamicBlog(editor) {
          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 9c0-.6-.5-1-1.3-1H3.4C2.5 8 2 8.4 2 9v6c0 .6.5 1 1.3 1h17.4c.8 0 1.3-.4 1.3-1V9zm-1 6H3V9h18v6z"/><path d="M4 10h1v4H4z"/></svg>',
       attributes: { class: 'fa fa-text' },
       content: { type: 'custom-blog' },
+   })
+}
+
+function mkBlog(editor) {
+   // Define a new custom component
+   const text = 'Headers test'
+
+   editor.Components.addType('mk-blog', {
+      model: {
+         defaults: {
+            // Make the editor understand when to bind `my-blog-type`
+            isComponent: el => el.tagName === 'div',
+            components: {
+               tagName: 'section',
+               attributes: {
+                  class: 'blog-section py-5',
+               },
+               components: {
+                  attributes: {
+                     class: 'container',
+                  },
+                  components: [
+                     {
+                        attributes: {
+                           class: 'head-box text-center mb-5',
+                        },
+                        components: [
+                           {
+                              tagName: 'h2',
+                              content: 'Our Blog Post',
+                           },
+                           {
+                              tagName: 'h6',
+                              attributes: {
+                                 class: 'text-underline-primary',
+                              },
+                              content: 'This is blog panel',
+                           },
+                           {
+                              attributes: {
+                                 class: 'text-underline',
+                              },
+                           },
+                        ],
+                     },
+                     {
+                        attributes: {
+                           class: 'row',
+                        },
+                        components: {
+                           attributes: {
+                              class: 'col col-xs-12',
+                           },
+                           components: {
+                              attributes: {
+                                 class: 'blog-grids',
+                              },
+                              components: [
+                                 {
+                                    attributes: {
+                                       class: 'grid',
+                                    },
+                                    components: [
+                                       {
+                                          attributes: {
+                                             class: 'entry-media',
+                                          },
+                                          components: {
+                                             tagName: 'img',
+                                             type: 'image',
+                                             attributes: {
+                                                src: 'images/mimi-thian.jpg',
+                                             },
+                                          },
+                                       },
+                                       {
+                                          attributes: {
+                                             class: 'entry-body',
+                                          },
+                                          components: [
+                                             {
+                                                tagName: 'span',
+                                                attributes: {
+                                                   class: 'cat',
+                                                },
+                                                content: 'inspiration',
+                                             },
+                                             {
+                                                tagName: 'h3',
+                                                components: {
+                                                   tagName: 'a',
+                                                   content:
+                                                      'Beautiful css3 buttons with hover effects',
+                                                },
+                                             },
+                                             {
+                                                attributes: {
+                                                   class: 'read-more-date',
+                                                },
+                                                components: [
+                                                   {
+                                                      tagName: 'a',
+                                                      content: 'Read More...',
+                                                   },
+                                                   {
+                                                      tagName: 'span',
+                                                      attributes: {
+                                                         class: 'date',
+                                                      },
+                                                      content: '3 Hours Ago',
+                                                   },
+                                                ],
+                                             },
+                                          ],
+                                       },
+                                    ],
+                                 },
+                              ],
+                           },
+                        },
+                     },
+                  ],
+               },
+            },
+            style: {
+               padding: '40px',
+            },
+         },
+      },
+   })
+   // Create a block for the component, so we can drop it easily
+   editor.Blocks.add('mk-blog', {
+      label: 'Makiefy Blog',
+      media:
+         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 9c0-.6-.5-1-1.3-1H3.4C2.5 8 2 8.4 2 9v6c0 .6.5 1 1.3 1h17.4c.8 0 1.3-.4 1.3-1V9zm-1 6H3V9h18v6z"/><path d="M4 10h1v4H4z"/></svg>',
+      attributes: { class: 'fa fa-text' },
+      content: { type: 'mk-blog' },
    })
 }

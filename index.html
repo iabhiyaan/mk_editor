@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <title>GrapesJS</title>
   <link rel="stylesheet" href="dist/css/grapes.min.css">
+  <link rel="stylesheet" href="dist/css/custom.css">
   <script src="dist/grapes.min.js"></script>
   <script src="dist/custom.plugin.js"></script>
   <script src="dist/blog-manager.min.js"></script>
@@ -19,7 +20,9 @@
 </head>
 
 <body>
+  <link rel="stylesheet" href="dist/css/custom.css">
   <div id="gjs" style="height:0px; overflow:hidden;">
+
   </div>
   <script type="text/javascript">
     var editor = grapesjs.init({
@@ -61,8 +64,8 @@
         }
         ],
       },
-      // plugins: ['grapesjs-plugin-forms'],
-      plugins: ['dynamicInput','dynamicBlog'],
+      // plugins: [dynamicInput', 'dynamicBlog', ],
+      plugins: ['mkBlog',],
     });
 
   </script>
