@@ -297,9 +297,9 @@ function getMkBlogs(text, dateText) {
             components: [
                {
                   tagName: 'span',
-                  attributes: { class: 'cat category' },
+                  attributes: { class: 'mk_blog_category category cat' },
                   content: 'inspiration',
-                  traits: setBlogTrait('Show Category', '.category'),
+                  traits: setBlogTrait('Show Category'),
                   show__title: 'checked',
                   value: 'inspiration',
                },
@@ -308,10 +308,10 @@ function getMkBlogs(text, dateText) {
                   components: {
                      tagName: 'a',
                      attributes: {
-                        class: 'blog__title',
+                        class: 'mk_blog_title blog__title',
                      },
                      content: text,
-                     traits: setBlogTrait('Show Title', '.blog__title'),
+                     traits: setBlogTrait('Show Title'),
                      show__title: 'checked',
                      value: text,
                   },
@@ -325,10 +325,10 @@ function getMkBlogs(text, dateText) {
                      {
                         tagName: 'span',
                         attributes: {
-                           class: 'date',
+                           class: 'mk_blog_date date',
                         },
                         content: dateText,
-                        traits: setBlogTrait('Show Date', '.date'),
+                        traits: setBlogTrait('Show Date'),
                         show__title: 'checked',
                         value: dateText,
                      },
@@ -360,7 +360,10 @@ function setBlogTrait(label, el) {
          full: true, // Full width button
          command: editor => {
             const component = editor.getSelected()
-            const selectedNodes = component.closest('.blog-grids').find(el)
+            const [target] = component.getClasses()
+            const selectedNodes = component
+               .closest('.blog-grids')
+               .find(`.${target}`)
 
             const trait = component.getTrait('show__title')
             const textContentTrait = component.getTrait('value')
