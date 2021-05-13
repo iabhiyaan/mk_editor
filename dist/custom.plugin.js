@@ -299,7 +299,7 @@ function getMkBlogs(text, dateText) {
                   tagName: 'span',
                   attributes: { class: 'mk_blog_category category cat' },
                   content: 'inspiration',
-                  traits: setBlogTrait('Show Category'),
+                  traits: setBlogTrait({ label: 'Show Category' }),
                   show__title: 'checked',
                   value: 'inspiration',
                },
@@ -311,7 +311,7 @@ function getMkBlogs(text, dateText) {
                         class: 'mk_blog_title blog__title',
                      },
                      content: text,
-                     traits: setBlogTrait('Show Title'),
+                     traits: setBlogTrait({ label: 'Show Title' }),
                      show__title: 'checked',
                      value: text,
                   },
@@ -328,7 +328,7 @@ function getMkBlogs(text, dateText) {
                            class: 'mk_blog_date date',
                         },
                         content: dateText,
-                        traits: setBlogTrait('Show Date'),
+                        traits: setBlogTrait({ label: 'Show Date' }),
                         show__title: 'checked',
                         value: dateText,
                      },
@@ -340,7 +340,8 @@ function getMkBlogs(text, dateText) {
    }
 }
 
-function setBlogTrait(label) {
+// function with named parameters
+function setBlogTrait({ label, textContent = 'Text Content' } = {}) {
    return [
       {
          type: 'checkbox',
@@ -351,7 +352,7 @@ function setBlogTrait(label) {
       {
          type: 'text',
          name: 'value',
-         label: 'Text Content',
+         label: textContent,
          changeProp: 1,
       },
       {
