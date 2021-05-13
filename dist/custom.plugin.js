@@ -125,7 +125,6 @@ function dynamicInput(editor) {
    })
 }
 
-// rendering using component
 function dynamicBlog(editor) {
    // Define a new custom component
    const text = 'Headers test'
@@ -215,9 +214,12 @@ function dynamicBlog(editor) {
    })
 }
 
+// makeify plugins
+
 function mkBlog(editor) {
    // Define a new custom component
    const text = 'Headers test'
+   const dateText = '3 Hours Ago'
 
    editor.Components.addType('mk-blog', {
       model: {
@@ -255,9 +257,9 @@ function mkBlog(editor) {
                                     'display: flex; justify-content: space-between',
                               },
                               components: [
-                                 getMkBlogs(text),
-                                 getMkBlogs(text),
-                                 getMkBlogs(text),
+                                 getMkBlogs(text, dateText),
+                                 getMkBlogs(text, dateText),
+                                 getMkBlogs(text, dateText),
                               ],
                            },
                         },
@@ -271,7 +273,7 @@ function mkBlog(editor) {
    })
    // Create a block for the component, so we can drop it easily
    editor.Blocks.add('mk-blog', {
-      label: 'Makiefy Blog',
+      label: 'Makeify Blog',
       media:
          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 9c0-.6-.5-1-1.3-1H3.4C2.5 8 2 8.4 2 9v6c0 .6.5 1 1.3 1h17.4c.8 0 1.3-.4 1.3-1V9zm-1 6H3V9h18v6z"/><path d="M4 10h1v4H4z"/></svg>',
       attributes: { class: 'fa fa-text' },
@@ -279,7 +281,7 @@ function mkBlog(editor) {
    })
 }
 
-function getMkBlogs(text) {
+function getMkBlogs(text, dateText) {
    return {
       attributes: { class: 'grid' },
       components: [
@@ -295,67 +297,21 @@ function getMkBlogs(text) {
             components: [
                {
                   tagName: 'span',
-                  attributes: { class: 'cat' },
+                  attributes: { class: 'cat category' },
                   content: 'inspiration',
+                  traits: setBlogTrait('Show Category', '.category'),
+                  show__title: 'checked',
+                  value: 'inspiration',
                },
                {
                   tagName: 'h3',
                   components: {
                      tagName: 'a',
+                     attributes: {
+                        class: 'blog__title',
+                     },
                      content: text,
-                     traits: [
-                        {
-                           type: 'checkbox',
-                           name: 'show__title',
-                           label: 'Show Title',
-                           changeProp: 1,
-                        },
-                        {
-                           type: 'text',
-                           name: 'value',
-                           label: 'Value',
-                           changeProp: 1,
-                        },
-                        {
-                           type: 'button',
-                           text: 'Submit',
-                           full: true, // Full width button
-                           command: editor => {
-                              const component = editor.getSelected()
-                              const parentNode = component
-                                 .parent()
-                                 .parent()
-                                 .parent()
-                                 .parent()
-                                 .find('h3 a')
-                              const trait = component.getTrait('show__title')
-                              const textContentTrait = component.getTrait(
-                                 'value'
-                              )
-                              const { value: showTitle } = trait.props()
-                              if (textContentTrait.props().value) {
-                                 component.empty()
-                                 component.append(
-                                    textContentTrait.props().value
-                                 )
-                              }
-                              if (!showTitle) {
-                                 parentNode.forEach(node =>
-                                    node.setAttributes({
-                                       style: 'display:none',
-                                    })
-                                 )
-                              }
-                              if (showTitle) {
-                                 parentNode.forEach(node =>
-                                    node.setAttributes({
-                                       style: 'display:block',
-                                    })
-                                 )
-                              }
-                           },
-                        },
-                     ],
+                     traits: setBlogTrait('Show Title', '.blog__title'),
                      show__title: 'checked',
                      value: text,
                   },
@@ -371,7 +327,10 @@ function getMkBlogs(text) {
                         attributes: {
                            class: 'date',
                         },
-                        content: '3 Hours Ago',
+                        content: dateText,
+                        traits: setBlogTrait('Show Date', '.date'),
+                        show__title: 'checked',
+                        value: dateText,
                      },
                   ],
                },
@@ -379,4 +338,54 @@ function getMkBlogs(text) {
          },
       ],
    }
+}
+
+function setBlogTrait(label, el) {
+   return [
+      {
+         type: 'checkbox',
+         name: 'show__title',
+         label,
+         changeProp: 1,
+      },
+      {
+         type: 'text',
+         name: 'value',
+         label: 'Text Content',
+         changeProp: 1,
+      },
+      {
+         type: 'button',
+         text: 'Submit',
+         full: true, // Full width button
+         command: editor => {
+            const component = editor.getSelected()
+            const selectedNodes = component.closest('.blog-grids').find(el)
+
+            const trait = component.getTrait('show__title')
+            const textContentTrait = component.getTrait('value')
+
+            const { value: showTitle } = trait.props()
+
+            if (textContentTrait.props().value) {
+               component.empty()
+               component.append(textContentTrait.props().value)
+            }
+            if (!showTitle) {
+               selectedNodes.forEach(node =>
+                  node.setAttributes({
+                     style: 'display:none',
+                  })
+               )
+            }
+            if (showTitle) {
+               selectedNodes.forEach(node =>
+                  node.setAttributes({
+                     style: 'display:initial',
+                  })
+               )
+            }
+         },
+      },
+   ]
 }

@@ -31,11 +31,10 @@
       container: '#gjs',
       height: '100%',
       fromElement: true,
-      // storageManager: {
-      //   type: 'remote',          // Type of the storage
-      //   urlStore: 'http://localhost:5000/',
-      //   urlLoad: 'http://localhost:5000/',
-      // },
+      storageManager: {
+        type: 'local',
+        autoload: 0,        // Type of the storage
+      },
       styleManager: {
         sectors: [{
           name: 'General',
