@@ -340,7 +340,7 @@ function getMkBlogs(text, dateText) {
    }
 }
 
-function setBlogTrait(label, el) {
+function setBlogTrait(label) {
    return [
       {
          type: 'checkbox',
